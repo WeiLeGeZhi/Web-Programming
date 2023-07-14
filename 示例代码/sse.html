@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Server-Sent</title>
+</head>
+
+<body>
+    <div id="result"></div>
+
+    <!--js-->
+    <script>
+        var source = new EventSource('source.interface'); //数据接口
+        source.onmessage = function(event) {
+            document.getElementById('result').innerHTML += event.data + '<br>';
+        }
+    </script>
+</body>
+
+</html>

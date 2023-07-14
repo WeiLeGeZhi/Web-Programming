@@ -1,0 +1,23 @@
+{
+  "name": "web_programming",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "date-utils": "^1.2.21",
+    "elasticsearch": "^16.7.3",
+    "fs": "^0.0.1-security",
+    "iconv-lite": "^0.6.3",
+    "mysql": "^2.18.1",
+    "node-schedule": "^2.1.1",
+    "request": "^2.88.2",
+    "superagent": "^8.0.9"
+  }
+}

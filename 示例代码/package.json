@@ -1,0 +1,20 @@
+{
+    "name": "ele",
+    "version": "1.0.0",
+    "description": "first electron",
+    "main": "index.js",
+    "dependencies": {
+        "electron": "^8.1.1"
+    },
+    "devDependencies": {
+        "electron-package": "^0.1.0",
+        "electron-packager": "^14.2.1"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "electron .",
+        "packager": "electron-packager . ele --all --overwrite "
+    },
+    "author": "",
+    "license": "ISC"
+}
