@@ -1,0 +1,97 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#header {
+  background-color: rgb(7, 24, 103);
+  color: white;
+  text-align: center;
+  padding: 5px;
+  height: 96px;
+  width: 100%;
+}
+
+#nav {
+  line-height: 30px;
+  background-color: #eeeeee;
+  height: 900px;
+  width: 28%;
+  float: left;
+  padding: 5px;
+}
+
+#section {
+  height: 900px;
+  width: 72%;
+  float: left;
+  padding: 5px;
+  overflow: auto;
+  background-image: url('../images/sectionBackground.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#footer {
+  background-color: rgb(7, 24, 103);
+  color: white;
+  clear: both;
+  text-align: center;
+  padding: 5px;
+  height: 36px;
+  width: 100%;
+}
+
+input {
+  position: absolute;
+  left: 125px;
+  width: 150px;
+  height: 30px;
+  border: none;
+  background-color: #f9f9f9;
+  box-shadow: none;
+  color: black;
+  font-size: 14px;
+  line-height: 34px;
+  transition: all 0.2s;
+}
+
+input:hover {
+  border-color: #555;
+}
+
+select {
+  position: absolute;
+  left: 125px;
+  width: 150px;
+  height: 30px;
+  border: none;
+  background-color: #f9f9f9;
+  box-shadow: none;
+  color: black;
+  font-size: 14px;
+  line-height: 34px;
+  transition: all 0.2s;
+}
+
+select:hover {
+  border-color: #555;
+}
+
+button {
+  position: absolute;
+  left: 310px;
+  background-color: rgba(7, 24, 103,0.2);
+  height: 30px;
+  width: 60px;
+  border: none;
+  text-align: center;
+  color: white;
+}
+
+button:hover {
+  background: rgba(0,0,0,0.2);
+}

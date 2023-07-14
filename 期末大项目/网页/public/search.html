@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Homepage</title>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/style.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js'></script>
+    <script src='dist/echarts-wordcloud.js'></script>
+</head>
+
+<body>
+<div id="header">
+    <h1>热点新闻，一搜就知道！</h1>
+    <h2 id="searchkeyword"></h2>
+    <script>
+        $(document).ready(function () {
+            $('button[id="search"]').click(function() {
+                $.get('/process_get?keyword=' + $("input:text").val(), function(data) {
+                    $("#searchkeyword").empty();
+                    $("#searchkeyword").append($("input:text").val());
+                })
+            })
+        })
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('button[id="date"]').click(function() {
+                $.get('/date_get?date=' + $("input[type='date']").val(), function(data) {
+                    $("#searchkeyword").empty();
+                    $("#searchkeyword").append($("input[type='date']").val());
+                })
+            })
+        })
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('button[id="media"]').click(function() {
+                $.get('/media_get?media=' + item, function(data) {
+                    $("#searchkeyword").empty();
+                    if(item=='p')
+                    {
+                        $("#searchkeyword").append('人民日报海外版');
+                    }
+                    else
+                    {
+                        $("#searchkeyword").append('中国日报');
+                    }
+                })
+            })
+        })
+    </script>
+</div>
+<div id="nav">
+    <form>
+        <b>搜索栏</b>
+        <button type="button" id="clear" >清空</button>
+    </form>
+    <script>
+        document.getElementById("clear").addEventListener("click", function() {
+            document.getElementById("keyword").value = "";  // 清空输入框的值
+            var mediaSelect = document.getElementById("mediaSelect");
+            mediaSelect.value = "";  // 将下拉选择框的值重置为默认值
+            document.getElementById("start").value = "";
+        });
+    </script>
+    <form>
+        <br> 关键词：<input type="text" id="keyword" name="keyword">
+        <button type="button" id="search" >查询</button>
+    </form>
+    <form>
+        <br> 选择媒体：
+        <select id="mediaSelect" name="媒体">
+            <option value="" selected>......</option>
+            <option value="p">人民日报海外版</option>
+            <option value="d">中国日报</option>
+        </select>
+        <button type="button" id="media" >选择</button>
+    </form>
+    <form>
+        <br> 选择日期：
+        <input type="date" id="start" name="date" min="2017-01-01" max="2023-12-31">
+        <button type="button" id="date" >选择</button>
+    </form>
+    <div style="margin-top: 20px;"></div>
+    <canvas id="chart" width="400" height="200"></canvas>
+    <canvas id="cloud" width="400" height="400"></canvas>
+    <script type="module">
+        // 定义 myChart 为全局变量
+        var myChart;
+
+        $(document).ready(function () {
+            $('button[id="media"]').click(function() {
+                $.get('/media_get_chart?media=' + item, function(data) {
+                    $("#chart").empty();
+                    // 创建或更新柱状图数据
+                    if (!myChart) {
+                        myChart = echarts.init(document.getElementById('chart'));
+                    }
+                    let option = {
+                        title: [
+                            {
+                                left: 'center',
+                                text: '媒体时间热度'
+                            },
+                        ],
+                        xAxis: {
+                            show:false,
+                            type: 'value',
+                        },
+                        yAxis: {
+                            type: 'category',
+                            axisLine: { show: false },
+                            axisLabel: { show: false },
+                            axisTick: { show: false },
+                            splitLine: { show: false },
+                            data: data.words,
+                            inverse: true,
+                        },
+                        series: [
+                            {
+                                type: 'bar',
+                                itemStyle: {
+                                    color: 'rgba(0, 128, 255, 0.2)'  // 设置柱体颜色为淡蓝色
+                                },
+                                label: {
+                                    show: true,
+                                    color:'black',
+                                    formatter: '{b}'
+                                },
+                                data:  data.frequencies,
+                                sort: 'desc'
+                            }
+                        ]
+                    };
+
+                    myChart.setOption(option);
+                })
+            });
+
+            $('button[id="date"]').click(function() {
+                $.get('/date_get_chart?date=' + $("input[type='date']").val(), function(data) {
+                    $("#chart").empty();
+                    // 创建或更新柱状图数据
+                    if (!myChart) {
+                        myChart = echarts.init(document.getElementById('chart'));
+                    }
+                    let option = {
+                        title: [
+                            {
+                                left: 'center',
+                                text: '当日媒体热度'
+                            },
+                        ],
+                        xAxis: {
+                            show:false,
+                            type: 'value',
+                        },
+                        yAxis: {
+                            type: 'category',
+                            axisLine: { show: false },
+                            axisLabel: { show: false },
+                            axisTick: { show: false },
+                            splitLine: { show: false },
+                            data: data.words,
+                            inverse: true,
+                        },
+                        series: [
+                            {
+                                type: 'bar',
+                                itemStyle: {
+                                    color: 'rgba(0, 128, 255, 0.2)'  // 设置柱体颜色为淡蓝色
+                                },
+                                label: {
+                                    show: true,
+                                    color:'black',
+                                    formatter: '{b}'
+                                },
+                                data:  data.frequencies,
+                                sort: 'desc'
+                            }
+                        ]
+                    };
+
+                    myChart.setOption(option);
+                })
+            });
+        })
+
+        $(document).ready(function() {
+            $('button[id="search"]').click(function() {
+                $.get('/process_get_chart?keyword=' + $("input:text").val(), function(data) {
+                    $("#chart").empty();
+                    // 创建或更新柱状图数据
+                    if (!myChart) {
+                        myChart = echarts.init(document.getElementById('chart'));
+                    }
+                    let option = {
+                        title: [
+                            {
+                                left: 'center',
+                                text: '关键词媒体热度'
+                            },
+                        ],
+                        xAxis: {
+                            show:false,
+                            type: 'value',
+                        },
+                        yAxis: {
+                            type: 'category',
+                            axisLine: { show: false },
+                            axisLabel: { show: false },
+                            axisTick: { show: false },
+                            splitLine: { show: false },
+                            data: data.words,
+                            inverse: true,
+                        },
+                        series: [
+                            {
+                                type: 'bar',
+                                itemStyle: {
+                                    color: 'rgba(0, 128, 255, 0.2)'  // 设置柱体颜色为淡蓝色
+                                },
+                                label: {
+                                    show: true,
+                                    color:'black',
+                                    formatter: '{b}'
+                                },
+                                data:  data.frequencies,
+                                sort: 'desc'
+                            }
+                        ]
+                    };
+
+                    myChart.setOption(option);
+                })
+            })
+        })
+    </script>
+    <script type="module">
+        // 定义 myChart 为全局变量
+        let myChart;
+        $(document).ready(function() {
+            $('button[id="search"]').click(function () {
+                $.get('/process_get_cloud?keyword=' + $("input:text").val(), function (data) {
+                    if (myChart) {
+                        myChart.dispose(); // 销毁之前的图表实例
+                    }
+                    myChart = echarts.init(document.getElementById('cloud'));
+                    let words = data.words.slice();  // 创建 words 的副本用于排序
+                    let frequencies = data.frequencies.slice();  // 创建 frequencies 的副本用于排序
+
+                    // 使用排序索引对 words 和 frequencies 进行排序
+                    let sortIndex = words.map((_, index) => index).sort((a, b) => words[a].localeCompare(words[b]));
+                    words.sort((a, b) => a.localeCompare(b));
+                    frequencies = sortIndex.map(index => frequencies[index]);
+
+                    let option = {
+                        title: [
+                            {
+                                left: 'center',
+                                text: '关键词时间热度'
+                            },
+                        ],
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: words
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [
+                            {
+                                data: frequencies,
+                                type: 'line',
+                                areaStyle: {}
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                })
+            })
+        })
+        $('button[id="date"]').click(function() {
+            $.get('/date_get_cloud?date=' + $("input[type='date']").val(), function (data) {
+                if (myChart) {
+                    myChart.dispose(); // 销毁之前的图表实例
+                }
+                myChart = echarts.init(document.getElementById('cloud'));
+                var option = {
+                    title: [
+                        {
+                            left: 'center',
+                            text: '当日热词'
+                        },
+                    ],
+                    tooltip: {},
+                    series: [ {
+                        type: 'wordCloud',
+                        gridSize: 2,
+                        sizeRange: [20, 88],
+                        rotationRange: [0, 0],
+                        shape: 'square',
+                        width: 400,
+                        height: 400,
+                        drawOutOfBound: true,
+                        textStyle: {
+                            color: function () {
+                                return 'rgb(' + [
+                                    Math.round(Math.random() * 160),
+                                    Math.round(Math.random() * 160),
+                                    Math.round(Math.random() * 160)
+                                ].join(',') + ')';
+                            }
+                        },
+                        emphasis: {
+                            textStyle: {
+                                shadowBlur: 10,
+                                shadowColor: '#333'
+                            }
+                        },
+                        data: data
+                    } ]
+                };
+
+                myChart.setOption(option);
+
+                window.onresize = myChart.resize;
+            })
+        })
+        $(document).ready(function () {
+            $('button[id="media"]').click(function () {
+                $.get('/media_get_cloud?media=' + item, function (data) {
+                    if (myChart) {
+                        myChart.dispose(); // 销毁之前的图表实例
+                    }
+                    myChart = echarts.init(document.getElementById('cloud'));
+                    var option = {
+                        title: [
+                            {
+                                left: 'center',
+                                text: '媒体热词'
+                            },
+                        ],
+                        tooltip: {},
+                        series: [ {
+                            type: 'wordCloud',
+                            gridSize: 2,
+                            sizeRange: [20, 88],
+                            rotationRange: [0, 0],
+                            shape: 'square',
+                            width: 400,
+                            height: 400,
+                            drawOutOfBound: true,
+                            textStyle: {
+                                color: function () {
+                                    return 'rgb(' + [
+                                        Math.round(Math.random() * 160),
+                                        Math.round(Math.random() * 160),
+                                        Math.round(Math.random() * 160)
+                                    ].join(',') + ')';
+                                }
+                            },
+                            emphasis: {
+                                textStyle: {
+                                    shadowBlur: 10,
+                                    shadowColor: '#333'
+                                }
+                            },
+                            data: data
+                        } ]
+                    };
+
+                    myChart.setOption(option);
+
+                    window.onresize = myChart.resize;
+                })
+            })
+        })
+    </script>
+</div>
+<div id="section" class="cardLayout">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <table class="table" id="record2">
+                    <thead>
+                    <tr>
+                        <th onclick="sortTable(0)"><b>标题</b></th>
+                        <th onclick="sortTable(1)"><b>来源</b></th>
+                        <th onclick="sortTable(2)"><b>日期</b></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <ul class="pagination"></ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("record2");
+            switching = true;
+            // 设置升序排列
+            dir = "asc";
+            /* 设置一个循环语句 */
+            while (switching) {
+                // 设置循环结束标记
+                switching = false;
+                rows = table.rows;
+                /* 循环列表，从第二行开始 */
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // 设置元素是否调换位置
+                    shouldSwitch = false;
+                    /* 获取要比较的元素,
+                    one from current row and one from the next: */
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /* 判断是否将下一个元素与当前元素进行切换 (asc 或 desc):  */
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            // 设置调换元素标记，并结束当前循环
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            // 设置调换元素标记，并结束当前循环
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* 如果元素调换位置设置为 true，则进行对调操作 */
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    // 每次对调完成时，将 switchcount 增加 1
+                    switchcount ++;
+                } else {
+                    /* 如果完成所有元素的排序且 direction 设置为 "asc",这时就将 direction 设置为 "desc" 并再次执行循环 */
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            var currentPage = 1;
+            var recordsPerPage = 11;
+            var data;
+
+            function displayData() {
+                var startIndex = (currentPage - 1) * recordsPerPage;
+                var endIndex = startIndex + recordsPerPage;
+                var tableBody = $("#record2").find("tbody");
+                tableBody.empty();
+
+                for (var i = startIndex; i < endIndex && i < data.length; i++) {
+                    var list = data[i];
+                    var tableRow = $("<tr>").addClass("cardLayout");
+                    Object.values(list).forEach(function(element, index) {
+                        var tableData = $("<td>");
+                        if (index === 0) { // 如果是标题字段
+                            var link = document.createElement("a");
+                            let titleAndUrl = element.split('%^&')
+                            link.href = titleAndUrl[0];
+                            link.textContent = titleAndUrl[1];
+                            tableData.append(link);
+                        } else {
+                            tableData.text(element);
+                        }
+                        tableRow.append(tableData);
+                    });
+
+                    tableRow.appendTo(tableBody);
+                }
+            }
+
+            function setupPagination() {
+                var totalRecords = data.length;
+                var totalPages = Math.ceil(totalRecords / recordsPerPage);
+                var pagination = $(".pagination");
+                pagination.empty();
+
+                var prevLink = $("<a>").addClass("page-link").attr("href", "#").text("上一页");
+                var nextLink = $("<a>").addClass("page-link").attr("href", "#").text("下一页");
+
+                var prevItem = $("<li>").addClass("page-item");
+                var nextItem = $("<li>").addClass("page-item");
+
+                if (currentPage === 1) {
+                    prevItem.addClass("disabled");
+                } else {
+                    prevLink.click(function(event) {
+                        event.preventDefault();
+                        setPage(currentPage - 1);
+                    });
+                }
+
+                if (currentPage === totalPages) {
+                    nextItem.addClass("disabled");
+                } else {
+                    nextLink.click(function(event) {
+                        event.preventDefault();
+                        setPage(currentPage + 1);
+                    });
+                }
+
+                prevItem.append(prevLink).appendTo(pagination);
+
+                for (var i = 1; i <= totalPages; i++) {
+                    var pageItem = $("<li>").addClass("page-item");
+                    var pageLink = $("<a>").addClass("page-link").attr("href", "#").text(i);
+
+                    if (i === currentPage) {
+                        pageItem.addClass("active");
+                    }
+
+                    pageItem.append(pageLink).appendTo(pagination);
+
+                    pageLink.click(function(event) {
+                        event.preventDefault();
+                        var page = parseInt($(this).text());
+                        setPage(page);
+                    });
+                }
+
+                nextItem.append(nextLink).appendTo(pagination);
+            }
+
+
+            function setPage(page) {
+                currentPage = page;
+                displayData();
+                setupPagination();
+            }
+
+            $('button[id="search"]').click(function() {
+                $.get('/process_get?keyword=' + $("#keyword").val(), function(responseData) {
+                    data = responseData;
+                    setPage(1);
+                });
+            });
+
+            $('button[id="date"]').click(function() {
+                $.get('/date_get?date=' + $("input[type='date']").val(), function(responseData) {
+                    data = responseData;
+                    setPage(1);
+                });
+            });
+
+            $('button[id="media"]').click(function() {
+                $.get('/media_get?media=' + item, function(responseData) {
+                    data = responseData;
+                    setPage(1);
+                });
+            });
+
+            $(".pagination").on("click", "a.page-link", function(event) {
+                event.preventDefault();
+                var page = parseInt($(this).text());
+                setPage(page);
+            });
+        });
+    </script>
+</div>
+<div id="footer">
+    <p>温兆和 10205501432 《Web编程》期末大项目</p>
+</div>
+<script>
+    var item;
+    $("select").on('change', function () {
+        if ($(this).val() != -1) {
+            item = $(this).val();
+        }
+    })
+</script>
+</body>
+
+</html>
