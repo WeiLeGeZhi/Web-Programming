@@ -7,6 +7,24 @@ WEN Zhaohe's repository for the course Web Programming
 - 客户端JavaScript
 - 服务器端JavaScript
 - JavaScript前端框架和工具
+## 项目入口
+### 启动爬虫
+- 《中国日报》
+```shell
+cd ../期末大项目/爬虫
+node crawler_d.js
+```
+- 《人民日报海外版》
+```shell
+cd ../期末大项目/爬虫
+node crawler_p.js
+```
+### 启动网页
+```shell
+cd ../期末大项目/网页
+node bin/www
+```
+<strong>注意：启动网站时可能需要使用VPN，否则可能无法显示图表。</strong>
 ## 期末大项目开发日志
 ### 2023.07.03
 项目进度：
@@ -256,7 +274,7 @@ crawler.query('INSERT IGNORE INTO newsinfo(title,content,keywords,publish_date,a
 ```
 ### 2023.07.13
 项目进度：
-- 梅花按钮样式
+- 美化按钮样式
 - 调整柱状图颜色
 - 调整词云图形状
 - 调整顶部、底部颜色
